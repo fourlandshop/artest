@@ -1,60 +1,73 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>AR Viewer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/aframe@1.4.2/dist/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-aframe.prod.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-aframe.prod.css" />
-    <style>
-      html, body {
-        margin: 0;
-        overflow: hidden;
-        background-color: black;
-        height: 100%;
-        width: 100%;
-      }
-      a-scene {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiScanning: true;"
-      device-orientation-permission-ui="enabled: true"
-      embedded
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-    >
-      <a-assets>
-        <video id="video" src="video.mp4" preload="auto" loop crossorigin="anonymous" playsinline></video>
-      </a-assets>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Video Player</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #ar-container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="ar-container"></div>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <script src="https://cdn.jsdelivr.net/npm/mindar@0.5.3/dist/mindar-image-three.prod.js"></script>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mindar@0.5.3/dist/mindar-image-aframe.prod.js"></script>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#video" width="1" height="0.5625" position="0 0 0" rotation="0 0 0"></a-video>
-      </a-entity>
-    </a-scene>
+  <a-scene
+    mindar-image="imageTargetSrc: ./target.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no;"
+    embedded
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-assets>
+      <video
+        id="video-asset"
+        src="./video.mp4"
+        autoplay
+        loop
+        preload="auto"
+        muted="false"
+      ></video>
+    </a-assets>
 
-    <script>
-      const video = document.querySelector("#video");
-      const scene = document.querySelector("a-scene");
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      scene.addEventListener("targetFound", () => {
-        video.play();
-      });
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-video
+        src="#video-asset"
+        width="1"
+        height="0.5625"
+        position="0 0 0"
+        rotation="0 0 0"
+      ></a-video>
+    </a-entity>
+  </a-scene>
 
-      scene.addEventListener("targetLost", () => {
-        video.pause();
-      });
-    </script>
-  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sceneEl = document.querySelector('a-scene');
+      const arSystem = sceneEl.systems['mindar-image-system'];
+
+      // درخواست دسترسی به دوربین
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+          // شروع AR پس از دریافت دسترسی
+          arSystem.start();
+        })
+        .catch(err => {
+          console.error('Camera access error:', err);
+          alert('لطفاً دسترسی به دوربین را فراهم کنید.');
+        });
+    });
+  </script>
+</body>
 </html>

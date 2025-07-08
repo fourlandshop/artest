@@ -2,50 +2,45 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>AR Video</title>
+    <title>AR Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/aframe@1.4.2/dist/aframe.min.js"></script>
-    <script src="https://unpkg.com/mind-ar@1.1.7/dist/mindar-image-aframe.prod.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/mind-ar@1.1.7/dist/mindar-image-aframe.prod.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-aframe.prod.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.1.7/dist/mindar-image-aframe.prod.css" />
     <style>
       html, body {
         margin: 0;
-        padding: 0;
         overflow: hidden;
-        background: black;
+        background-color: black;
+        height: 100%;
+        width: 100%;
+      }
+      a-scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
       }
     </style>
   </head>
   <body>
     <a-scene
       mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiScanning: true;"
+      device-orientation-permission-ui="enabled: true"
       embedded
       color-space="sRGB"
-      device-orientation-permission-ui="enabled: true"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
     >
       <a-assets>
-        <video
-          id="video"
-          src="video.mp4"
-          preload="auto"
-          loop
-          crossorigin="anonymous"
-          playsinline
-        ></video>
+        <video id="video" src="video.mp4" preload="auto" loop crossorigin="anonymous" playsinline></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-video
-          src="#video"
-          width="1"
-          height="0.5625"
-          position="0 0 0"
-          rotation="0 0 0"
-        ></a-video>
+        <a-video src="#video" width="1" height="0.5625" position="0 0 0" rotation="0 0 0"></a-video>
       </a-entity>
     </a-scene>
 

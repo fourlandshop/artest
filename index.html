@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>AR Video with Sound</title>
+    <title>AR Video</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- A-Frame -->
@@ -17,72 +17,52 @@
         margin: 0;
         overflow: hidden;
       }
-
-      #playButton {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px 40px;
-        font-size: 18px;
-        background-color: #0984e3;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: 10;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      }
     </style>
   </head>
-
   <body>
-    <!-- دکمه پخش -->
-    <button id="playButton">شروع تجربه AR 🎥</button>
-
-    <!-- صحنه واقعیت افزوده -->
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: false; uiScanning: true"
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiScanning: true"
       embedded
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
+      device-orientation-permission-ui="enabled: true"
     >
       <a-assets>
-        <video id="ar-video" src="video.mp4" preload="auto" loop crossorigin="anonymous" playsinline></video>
+        <video
+          id="video"
+          src="video.mp4"
+          preload="auto"
+          loop
+          crossorigin="anonymous"
+          playsinline
+        ></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
         <a-video
-          src="#ar-video"
+          src="#video"
           width="1"
           height="0.5625"
           position="0 0 0"
           rotation="0 0 0"
           autoplay="false"
-          loop="true"
         ></a-video>
       </a-entity>
     </a-scene>
 
-    <!-- اسکریپت اجرای همزمان AR و پخش -->
     <script>
-      const playButton = document.getElementById("playButton");
-      const video = document.getElementById("ar-video");
+      const video = document.querySelector("#video");
       const sceneEl = document.querySelector("a-scene");
 
-      playButton.addEventListener("click", async () => {
-        try {
-          await video.play(); // پخش ویدیو
-          await sceneEl.components["mindar-image"].start(); // اجرای MindAR
-          playButton.style.display = "none"; // حذف دکمه
-        } catch (err) {
-          alert("لطفاً به دوربین اجازه دسترسی بدهید.");
-          console.error(err);
-        }
+      sceneEl.addEventListener("targetFound", () => {
+        video.play();
+      });
+
+      sceneEl.addEventListener("targetLost", () => {
+        video.pause();
       });
     </script>
   </body>
